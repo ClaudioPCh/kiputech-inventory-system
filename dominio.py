@@ -8,12 +8,30 @@ class Producto:
     _contador_id = 0
 
     def __init__(self, nombre, categoria, cantidad, precio, codigo=None):
+        if not codigo or codigo.strip() == "":
+            Producto._contador_id += 1
+            self.__codigo = f"P{Producto._contador_id:03d}"
+        else:
+            self.__codigo = codigo.strip()
+            self.__actualizar_contador(self.__codigo)
+
         self.__nombre = nombre.strip()
         self.__categoria = categoria.strip()
         self.__cantidad = int(cantidad)
         self.__precio = float(precio)
         self.__fechaCreacion = datetime.now()
         self.__fechaUltimaModificacion = datetime.now()
+
+    @classmethod
+    def __actualizar_contador(cls, codigo_existente):
+        try:
+            nums = ''.join(filter(str.isdigit, codigo_existente))
+            if nums:
+                numero = int(nums)
+                if numero > cls._contador_id:
+                    cls._contador_id = numero
+        except ValueError:
+            pass
 
     # Getters
     def get_codigo(self): return self.__codigo
