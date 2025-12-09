@@ -1,6 +1,26 @@
 from datetime import datetime
 
 # =============================================================================
+# EXCEPCIONES PERSONALIZADAS
+# =============================================================================
+
+class InventarioError(Exception):
+    """Clase base para excepciones del inventario."""
+    pass
+
+class StockInsuficienteError(InventarioError):
+    def __init__(self, stock_actual, cantidad_solicitada):
+        self.stock_actual = stock_actual
+        self.cantidad_solicitada = cantidad_solicitada
+        super().__init__(f"Stock insuficiente. Disponible: {stock_actual}, Solicitado: {cantidad_solicitada}")
+
+class HistorialVacioError(InventarioError):
+    pass
+
+class ProductoNoEncontradoError(InventarioError):
+    pass
+
+# =============================================================================
 # CLASE PRODUCTO
 # =============================================================================
 
