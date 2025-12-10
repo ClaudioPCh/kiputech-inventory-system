@@ -67,3 +67,38 @@ class Inventario:
         accion = AccionDescontarStock(producto, cantidad)
         accion.ejecutar(self) 
         self.__historialAcciones.append(accion)
+
+
+#=========================================
+
+    def ordenarInventario(self, criterio):
+        return criterio.ordenar(self.__productos)
+
+    def importarDesdeArchivo(self, ruta):
+        imp = ImportadorArchivo()
+        lista = imp.importarInventario(ruta)
+        
+        count = 0
+        duplicados = 0
+        for p in lista:
+            existe = self.buscarProducto(BusquedaPorCodigo(), p.get_codigo())
+            if not existe:
+                self.agregarProducto(p)
+                count += 1
+            else:
+                duplicados += 1
+        return count, duplicados
+
+    def get_ultima_accion(self):
+        if self.__historialAcciones:
+            return self.__historialAcciones[-1]
+        return None
+
+    def revertirUltimaAccion(self):
+        if not self.__historialAcciones:
+            raise HistorialVacioError("No existen acciones previas para deshacer.")
+            
+        accion = self.__historialAcciones.pop()
+        accion.revertir(self)
+        return True
+
