@@ -248,17 +248,90 @@ if __name__ == "__main__":
         input()
 
 
+    def pantalla_ordenar(self):
+        imprimir_encabezado("ORDENAR INVENTARIO")
+        print("Seleccione criterio de orden:\n")
+        print("[1] Ordenar por STOCK (menor a mayor)")
+        print("[2] Ordenar por STOCK (mayor a menor)")
+        print("[3] Ordenar por PRECIO (menor a mayor)")
+        print("[4] Ordenar por PRECIO (mayor a menor)")
+        print("[5] Volver al menú")
+
+        opc = input("\nOpción: ")
+        criterio = None
+        
+        if opc == '1': criterio = OrdenarPorStockAsc()
+        elif opc == '2': criterio = OrdenarPorStockDesc()
+        elif opc == '3': criterio = OrdenarPorPrecioAsc()
+        elif opc == '4': criterio = OrdenarPorPrecioDesc()
+        elif opc == '5': return
+
+        if criterio:
+            lista = self.inv.ordenarInventario(criterio)
+            print("\nMensaje: Inventario ordenado correctamente.")
+            print("\nListado (resumen):")
+            print(f"{'Código':<10} {'Nombre':<20} {'Categoría':<15} {'Precio':<10} {'Stock':<5}")
+            print("-" * 65)
+            for p in lista:
+                print(p.mostrarInfo())
+            pausa()
 
 
+    def pantalla_importar(self):
+        imprimir_encabezado("IMPORTAR INVENTARIO DESDE ARCHIVO")
+        
+        print("Ingrese el nombre/ruta del archivo CSV (ej: inventario.csv).")
+        print("El archivo debe existir en su equipo.\n")
+        
+        ruta = input("Nombre del archivo: ").strip()
+        
+        print(f"\nBuscando archivo: {ruta} ...")
+        time.sleep(0.5)
 
+        try:
+            agregados, duplicados = self.inv.importarDesdeArchivo(ruta)
+            
+            print("\nProcesando...")
+            time.sleep(0.5)
+            print("\nMensaje final:")
+            print(f"\"Importación completada. {agregados} nuevos agregados, {duplicados} omitidos por duplicidad.\"")
 
+        except FileNotFoundError as e:
+            print(f"\n[ERROR DE ARCHIVO]: {e}")
+            print("Verifique que el nombre esté bien escrito y que el archivo exista.")
+        except Exception as e:
+            print(f"\n[ERROR INESPERADO]: Ocurrió un problema al leer el archivo.")
+            print(f"Detalle: {e}")
 
+        print("\n[Enter] Volver al menú principal")
+        input()
 
+    def pantalla_deshacer(self):
+        imprimir_encabezado("DESHACER ÚLTIMA ACCIÓN")
+        ultima = self.inv.get_ultima_accion()
 
-
-
-
-    
+        if ultima:
+            print("Última acción registrada:")
+            print(f"Detalle   : {ultima.get_descripcion()}")
+            print(f"Fecha/Hora: {ultima._fecha.strftime('%d/%m/%Y %H:%M')}")
+            
+            print("\n¿Desea revertir esta acción?")
+            print("[1] Sí, deshacer")
+            print("[2] No, cancelar")
+            
+            opc = input("\nOpción: ")
+            if opc == '1':
+                try:
+                    self.inv.revertirUltimaAccion()
+                    print("\nMensaje: Acción revertida correctamente.")
+                except HistorialVacioError as e:
+                    print(f"\n[ERROR]: {e}")
+            else:
+                print("Operación cancelada.")
+        else:
+            print("\nMensaje: No hay acciones disponibles para deshacer.")
+        pausa()    
+        
 # =============================================================================
 # EJECUCIÓN
 # =============================================================================
