@@ -36,4 +36,34 @@ class ImportadorArchivo:
             return productos_leidos
 
         except Exception as e:
-            raise e 
+            raise e
+
+#==================================
+
+class Inventario:
+    def __init__(self):
+        self.__productos = []
+        self.__historialAcciones = []
+
+    def get_productos_raw(self): return self.__productos
+
+    def agregarProducto(self, producto):
+        accion = AccionAgregarProducto(producto)
+        accion.ejecutar(self)
+        self.__historialAcciones.append(accion)
+
+    def buscarProducto(self, estrategia, valor):
+        return estrategia.buscar(self.__productos, valor)
+
+    def eliminarProducto(self, producto):
+        if producto not in self.__productos:
+            raise ProductoNoEncontradoError("El producto que intenta eliminar no está en la lista.")
+            
+        accion = AccionEliminarProducto(producto)
+        accion.ejecutar(self)
+        self.__historialAcciones.append(accion)
+
+    def descontarStock(self, producto, cantidad):
+        accion = AccionDescontarStock(producto, cantidad)
+        accion.ejecutar(self) 
+        self.__historialAcciones.append(accion)
